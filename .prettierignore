@@ -1,0 +1,8 @@
+## Assets
+
+public 
+
+#other ignore files
+**/dockerfile
+**/*.yml
+README.md

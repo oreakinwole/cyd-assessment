@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary: 217 100% 47%;
+    --primary-muted: 217 87% 94% 1;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --muted-background: 220 4% 96%;
+    --muted-foreground: 0 0% 0% 0.5;
+    --success: 166 77% 44%;
+    --border: 165, 166, 169;
+    --success-gradient: linear-gradient(90deg, #e9fbf3 0%, #ffffff 100%);
+}
