@@ -17,35 +17,27 @@ export const authOptions: NextAuthOptions = {
                 password: { label: 'Password', type: 'password', placeholder: 'Password' },
             },
             async authorize(credentials) {
-                if (!credentials || !credentials.email || !credentials.password) {
+                if (!credentials?.email || !credentials.password) {
                     throw new Error('Missing credentials')
                 }
 
-                const { email, password } = credentials
+                const user = await prisma.users.findUnique({
+                    where: { email: credentials.email },
+                })
 
-                try {
-                    const user = await prisma.users.findUnique({
-                        where: { email },
-                    })
+                if (!user) {
+                    throw new Error('No user found')
+                }
 
-                    if (!user) {
-                        throw new Error('No user found')
-                    }
+                const isValid = await bcrypt.compare(credentials.password, user.password!)
+                if (!isValid) {
+                    throw new Error('Incorrect password')
+                }
 
-                    const passwordMatch = await bcrypt.compare(password, user.password!)
-
-                    if (!passwordMatch) {
-                        throw new Error('Incorrect password')
-                    }
-
-                    return {
-                        id: user.id.toString(),
-                        name: user.name!,
-                        email: user.email!,
-                        password: user.password,
-                    }
-                } catch (error) {
-                    throw new Error('Error validating credentials', { cause: error })
+                return {
+                    id: user.id.toString(),
+                    name: user.name!,
+                    email: user.email!,
                 }
             },
         }),
@@ -54,29 +46,20 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                const validUser = await prisma.users.findUnique({
-                    where: { email: user.email },
-                })
-                if (!validUser) {
-                    throw new Error('No user found')
-                }
-
-                token = {
-                    id: user.id.toString(),
-                    name: user.name!,
-                    email: user.email,
-                }
+                token.id = user.id
+                token.name = user.name
+                token.email = user.email
             }
-
             return token
         },
 
         async session({ session, token }: { session: Session; token: JWT }) {
-            if (!session.user) {
-                session.user = {}
+            session.user = {
+                id: token.user?.id,
+                name: token.name!,
+                email: token.email!,
             }
-            session.user.id = token.id
-            session.user.email = token.email
+
             return session
         },
     },

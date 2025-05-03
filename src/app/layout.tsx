@@ -1,7 +1,21 @@
 import type { Metadata } from 'next'
+// import { Poppins } from 'next/font/google'
 import './globals.css'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Providers from './Providers'
+
+// const poppins = Poppins({
+//     weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+//     subsets: ['latin'],
+//     display: 'swap',
+// })
+
+// const fira = Fira_Code({
+//     weight: ['300', '400', '500', '600', '700'],
+//     subsets: ['latin'],
+//     display: 'swap',
+// })
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -16,8 +30,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                {children}
-                <ToastContainer />
+                <Providers>
+                    {children}
+                    <ToastContainer />
+                </Providers>
             </body>
         </html>
     )
