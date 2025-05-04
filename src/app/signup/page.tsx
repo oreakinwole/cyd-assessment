@@ -22,7 +22,7 @@ function SubmitButton() {
     }
 
     return (
-        <button type="submit" className="bg-primary w-full p-2 rounded-[0.6rem] my-1 text-background" disabled={pending}>
+        <button type="submit" className="bg-gray-200 w-full p-2 rounded-[0.6rem] my-1 text-background" disabled={pending}>
             {pending ? (
                 <div className="flex justify-center items-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-background"></div>
@@ -95,7 +95,7 @@ export default function Signup() {
                             <SubmitButton />
                             <p className="text-foreground/50 text-sm font-medium line">
                                 Already have an account?
-                                <Link href="/signin">
+                                <Link href="/">
                                     <span className="text-foreground underline"> Sign in</span>
                                 </Link>
                             </p>

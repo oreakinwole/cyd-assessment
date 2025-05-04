@@ -13,8 +13,8 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
-                email: { label: 'Email', type: 'email', placeholder: 'Email' },
-                password: { label: 'Password', type: 'password', placeholder: 'Password' },
+                email: { label: 'Email', type: 'email' },
+                password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials.password) {
@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
 
         async session({ session, token }: { session: Session; token: JWT }) {
             session.user = {
-                id: token.user?.id,
+                id: token.id!,
                 name: token.name!,
                 email: token.email!,
             }
