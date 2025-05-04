@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
-import Link from 'next/link'
+import UserManagement from '@/components/user-management/user-management'
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions)
@@ -11,17 +11,15 @@ export default async function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="mx-auto max-w-4xl bg-white p-8 shadow rounded-lg">
-                <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-                <div className="mb-6">
-                    <p className="text-gray-700">Welcome, {session.user?.name || session.user?.email}!</p>
-                    <p className="text-gray-500 mt-2">You are now signed in to your account.</p>
-                    <div className="border-t pt-4">
-                        <Link href="/api/auth/signout" className="text-indigo-600 hover:text-indigo-500 font-medium">
-                            Sign out
-                        </Link>
-                    </div>
+        <div className="min-h-screen bg-gray-50">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="py-8">
+                    <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                    <p className="mt-2 text-gray-600">Welcome, {session.user?.name || session.user?.email}!</p>
+                </div>
+
+                <div className="py-6">
+                    <UserManagement />
                 </div>
             </div>
         </div>
