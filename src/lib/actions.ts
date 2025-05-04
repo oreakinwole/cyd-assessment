@@ -10,6 +10,7 @@ type RegisterUserParams = {
 }
 
 export async function registerUser({ name, email, password }: RegisterUserParams) {
+    console.log('Registering user:', { name, email, password })
     try {
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
@@ -25,6 +26,8 @@ export async function registerUser({ name, email, password }: RegisterUserParams
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10)
 
+        console.log('Hashed password:', hashedPassword)
+
         const user = await prisma.user.create({
             data: {
                 name,
@@ -35,7 +38,6 @@ export async function registerUser({ name, email, password }: RegisterUserParams
 
         return { success: true, userId: user.id }
     } catch (error) {
-        console.error('Error registering user:', error)
         return { error: 'Failed to register user' }
     }
 }
