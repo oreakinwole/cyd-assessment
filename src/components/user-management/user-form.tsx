@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createUser } from '@/lib/user-actions'
 import { AlertCircle } from 'lucide-react'
+import { UserRole, UserStatus } from '@prisma/client'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface UserFormProps {
     onSuccess?: () => void
@@ -17,6 +19,8 @@ export function UserForm({ onSuccess }: UserFormProps) {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [role, setRole] = useState<UserRole>(UserRole.USER)
+    const [status, setStatus] = useState<UserStatus>(UserStatus.ACTIVE)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
@@ -26,10 +30,12 @@ export function UserForm({ onSuccess }: UserFormProps) {
         setIsLoading(true)
 
         try {
-            await createUser({ name, email, password })
+            await createUser({ name, email, password, role, status })
             setName('')
             setEmail('')
             setPassword('')
+            setRole(UserRole.USER)
+            setStatus(UserStatus.ACTIVE)
             if (onSuccess) {
                 onSuccess()
             }
@@ -69,6 +75,34 @@ export function UserForm({ onSuccess }: UserFormProps) {
                     placeholder="Enter user's password"
                     required
                 />
+            </div>
+
+            <div className="space-y-1">
+                <Label htmlFor="role">Role</Label>
+                <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                        <SelectItem value={UserRole.MANAGER}>Manager</SelectItem>
+                        <SelectItem value={UserRole.USER}>User</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <div className="space-y-1">
+                <Label htmlFor="status">Status</Label>
+                <Select value={status} onValueChange={(value) => setStatus(value as UserStatus)}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value={UserStatus.ACTIVE}>Active</SelectItem>
+                        <SelectItem value={UserStatus.INACTIVE}>Inactive</SelectItem>
+                        <SelectItem value={UserStatus.PENDING}>Pending</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {error && (

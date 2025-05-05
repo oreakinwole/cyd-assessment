@@ -9,11 +9,15 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { AlertCircle } from 'lucide-react'
 import { updateUser } from '@/lib/user-actions'
+import { UserRole, UserStatus } from '@prisma/client'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface User {
     id: string
     name: string | null
     email: string
+    role: UserRole
+    status: UserStatus
 }
 
 interface EditUserDialogProps {
@@ -27,6 +31,8 @@ export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: Edit
     const [name, setName] = useState(user.name || '')
     const [email, setEmail] = useState(user.email)
     const [password, setPassword] = useState('')
+    const [role, setRole] = useState<UserRole>(user.role)
+    const [status, setStatus] = useState<UserStatus>(user.status)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
@@ -41,6 +47,8 @@ export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: Edit
                 name,
                 email,
                 password: password || undefined,
+                role,
+                status,
             })
             onUserUpdated()
         } catch (error) {
@@ -84,6 +92,32 @@ export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: Edit
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter new password"
                             />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-role">Role</Label>
+                            <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+                                <SelectTrigger id="edit-role">
+                                    <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                                    <SelectItem value={UserRole.MANAGER}>Manager</SelectItem>
+                                    <SelectItem value={UserRole.USER}>User</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-status">Status</Label>
+                            <Select value={status} onValueChange={(value) => setStatus(value as UserStatus)}>
+                                <SelectTrigger id="edit-status">
+                                    <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={UserStatus.ACTIVE}>Active</SelectItem>
+                                    <SelectItem value={UserStatus.INACTIVE}>Inactive</SelectItem>
+                                    <SelectItem value={UserStatus.PENDING}>Pending</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {error && (

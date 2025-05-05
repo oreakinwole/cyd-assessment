@@ -2,29 +2,43 @@
 
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcrypt'
+import { UserRole, UserStatus } from '@prisma/client'
 
 export type PaginationParams = {
     page: number
     limit: number
     search?: string
+    role?: UserRole
+    status?: UserStatus
 }
 
 export async function fetchUsers(params?: PaginationParams) {
     try {
-        const { page = 1, limit = 10, search = '' } = params || {}
+        const { page = 1, limit = 10, search = '', role, status } = params || {}
         const skip = (page - 1) * limit
 
-        // Create search filter if search term is provided
-        const where = search
-            ? {
-                  OR: [{ name: { contains: search, mode: 'insensitive' } }, { email: { contains: search, mode: 'insensitive' } }],
-              }
-            : {}
+        // Create search filter
+        const where: any = {}
+
+        // Add search filter if search term is provided
+        if (search) {
+            where.OR = [{ name: { contains: search, mode: 'insensitive' } }, { email: { contains: search, mode: 'insensitive' } }]
+        }
+
+        // Add role filter if provided
+        if (role) {
+            where.role = role
+        }
+
+        // Add status filter if provided
+        if (status) {
+            where.status = status
+        }
 
         // Get total count for pagination
         const total = await prisma.user.count({ where })
 
-        // Fetch users with pagination and search
+        // Fetch users with pagination and filters
         const users = await prisma.user.findMany({
             where,
             orderBy: {
@@ -34,6 +48,8 @@ export async function fetchUsers(params?: PaginationParams) {
                 id: true,
                 name: true,
                 email: true,
+                role: true,
+                status: true,
                 createdAt: true,
             },
             skip,
@@ -55,7 +71,19 @@ export async function fetchUsers(params?: PaginationParams) {
     }
 }
 
-export async function createUser({ name, email, password }: { name: string; email: string; password: string }) {
+export async function createUser({
+    name,
+    email,
+    password,
+    role = UserRole.USER,
+    status = UserStatus.ACTIVE,
+}: {
+    name: string
+    email: string
+    password: string
+    role?: UserRole
+    status?: UserStatus
+}) {
     try {
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
@@ -77,6 +105,8 @@ export async function createUser({ name, email, password }: { name: string; emai
                 name,
                 email,
                 password: hashedPassword,
+                role,
+                status,
             },
         })
 
@@ -87,7 +117,21 @@ export async function createUser({ name, email, password }: { name: string; emai
     }
 }
 
-export async function updateUser({ id, name, email, password }: { id: string; name: string; email: string; password?: string }) {
+export async function updateUser({
+    id,
+    name,
+    email,
+    password,
+    role,
+    status,
+}: {
+    id: string
+    name: string
+    email: string
+    password?: string
+    role?: UserRole
+    status?: UserStatus
+}) {
     try {
         // Check if email is already taken by another user
         const existingUser = await prisma.user.findFirst({
@@ -111,6 +155,16 @@ export async function updateUser({ id, name, email, password }: { id: string; na
         // Only update password if provided
         if (password) {
             updateData.password = await bcrypt.hash(password, 10)
+        }
+
+        // Update role if provided
+        if (role) {
+            updateData.role = role
+        }
+
+        // Update status if provided
+        if (status) {
+            updateData.status = status
         }
 
         // Update the user
