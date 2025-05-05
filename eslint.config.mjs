@@ -1,16 +1,19 @@
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { FlatCompat } from '@eslint/eslintrc'
-import { configs as tsConfigs } from '@typescript-eslint/eslint-plugin'
 import prettierPlugin from 'eslint-plugin-prettier'
 import tsParser from '@typescript-eslint/parser'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
 const compat = new FlatCompat({
     baseDirectory: __dirname,
 })
-const eslintConfig = [
+
+const tsConfigs = (await import('@typescript-eslint/eslint-plugin')).configs
+
+export default [
     { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
     { ignores: ['.next/**/*', 'node_modules/', 'tailwind.config.ts'] },
     ...compat.extends('next/core-web-vitals', 'next/typescript'),
@@ -31,7 +34,6 @@ const eslintConfig = [
         rules: {
             ...tsConfigs.recommended.rules,
             ...tsConfigs['recommended-requiring-type-checking'].rules,
-
             ...prettierPlugin.configs.recommended.rules,
 
             'prettier/prettier': 'off',
@@ -53,8 +55,6 @@ const eslintConfig = [
             '@typescript-eslint/no-unsafe-member-access': 'off',
             '@typescript-eslint/no-unsafe-return': 'off',
             '@typescript-eslint/no-unsafe-call': 'off',
-            '@typescript-eslint/no-unsafe-assignment': 'off',
-            '@typescript-eslint/only-throw-error': 'off',
             '@typescript-eslint/only-throw-error': 'off',
             '@typescript-eslint/no-unnecessary-type-assertion': 'off',
             '@typescript-eslint/require-await': 'off',
@@ -63,12 +63,10 @@ const eslintConfig = [
         },
     },
     {
-        files: ['next.config.js', '**/*.js '],
+        files: ['next.config.js', '**/*.js'],
         rules: {
             'no-unused-vars': 'off',
             'prettier/prettier': 'off',
         },
     },
 ]
-
-export default eslintConfig
