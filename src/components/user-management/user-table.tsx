@@ -17,7 +17,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination'
-import { UserRole, use } from '@prisma/client'
+import { UserRole, UserStatus } from '@prisma/client'
 import {
     DropdownMenu,
     DropdownMenuContent,
