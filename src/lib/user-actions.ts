@@ -3,9 +3,30 @@
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcrypt'
 
-export async function fetchUsers() {
+export type PaginationParams = {
+    page: number
+    limit: number
+    search?: string
+}
+
+export async function fetchUsers(params?: PaginationParams) {
     try {
+        const { page = 1, limit = 10, search = '' } = params || {}
+        const skip = (page - 1) * limit
+
+        // Create search filter if search term is provided
+        const where = search
+            ? {
+                  OR: [{ name: { contains: search, mode: 'insensitive' } }, { email: { contains: search, mode: 'insensitive' } }],
+              }
+            : {}
+
+        // Get total count for pagination
+        const total = await prisma.user.count({ where })
+
+        // Fetch users with pagination and search
         const users = await prisma.user.findMany({
+            where,
             orderBy: {
                 createdAt: 'desc',
             },
@@ -15,8 +36,19 @@ export async function fetchUsers() {
                 email: true,
                 createdAt: true,
             },
+            skip,
+            take: limit,
         })
-        return users
+
+        return {
+            users,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        }
     } catch (error) {
         console.error('Failed to fetch users:', error)
         throw new Error('Failed to fetch users')
