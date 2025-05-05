@@ -63,7 +63,7 @@ export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: Edit
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Edit User</DialogTitle>
-                        <DialogDescription>Make changes to the user information here. Click save when you're done.</DialogDescription>
+                        <DialogDescription>Make changes to the user information here. Click save when you&apos;re done.</DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
