@@ -4,8 +4,9 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "next build",
-        "start": "next start"
+        "build": "npm run run-prisma && next build",
+        "start": "next start",
+        "run-prisma": "prisma generate"
     },
     "dependencies": {
         "@next-auth/prisma-adapter": "^1.0.7",
