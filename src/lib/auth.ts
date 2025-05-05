@@ -53,9 +53,15 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async session({ session, token }: { session: Session; token: JWT }) {
             if (token) {
-                session.user.id = token.id as string
-                session.user.name = token.name as string
-                session.user.email = token.email as string
+                session = {
+                    ...session,
+                    user: {
+                        ...session.user,
+                        id: token.id as string,
+                        name: token.name as string,
+                        email: token.email as string,
+                    },
+                }
             }
             return session
         },
