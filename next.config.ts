@@ -5,9 +5,9 @@ const nextConfig: NextConfig = {
     compiler: {
         styledComponents: true,
     },
-    eslint: {
-        dirs: ['src', 'prisma'],
-    },
+    // eslint: {
+    //     dirs: ['src', 'prisma'],
+    // },
 }
 
 export default nextConfig
